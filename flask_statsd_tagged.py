@@ -34,7 +34,7 @@ def _add_metric_to_request(metric_type, metric_name, metric_value):
             'incr': [],
             'gauge': [],
         }
-    assert metric_type in g.statsd_metrics.keys()
+    assert metric_type in list(g.statsd_metrics.keys())
 
     g.statsd_metrics[metric_type].append((metric_name, metric_value))
 
@@ -42,7 +42,7 @@ def _add_metric_to_request(metric_type, metric_name, metric_value):
 def add_tags(metric, **tags):
     if not metric:
         return metric
-    tag_str = ','.join([('%s=%s' % (k, v)) for k, v in tags.items()])
+    tag_str = ','.join([('%s=%s' % (k, v)) for k, v in list(tags.items())])
     return '%s,%s' % (metric, tag_str)
 
 
@@ -119,7 +119,7 @@ class FlaskStatsdTagged(object):
     @staticmethod
     def _send_user_metrics(pipe, tags):
         metrics = getattr(g, 'statsd_metrics', {})
-        for metric_type, metric_names_and_values in metrics.items():
+        for metric_type, metric_names_and_values in list(metrics.items()):
             for metric_name, metric_value in metric_names_and_values:
                 getattr(pipe, metric_type)(add_tags(metric_name, **tags), metric_value)
 
